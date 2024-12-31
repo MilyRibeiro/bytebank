@@ -1,4 +1,11 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { Armazenador } from "./Armazenador.js";
+import { ValidaDebito, ValidaDeposito } from "./Decorators.js";
 import { TipoTransacao } from "./TipoTransacao.js";
 export class Conta {
     nome;
@@ -56,25 +63,31 @@ export class Conta {
         Armazenador.salvar("transacoes", JSON.stringify(this.transacoes));
     }
     debitar(valor) {
-        if (valor <= 0) {
-            throw new Error("O valor a ser debitado deve ser maior que zero!");
-        }
-        if (valor > this.saldo) {
-            throw new Error("Saldo insuficiente!");
-        }
+        // if (valor <= 0) {
+        //     throw new Error("O valor a ser debitado deve ser maior que zero!");
+        // }
+        // if (valor > this.saldo) {
+        //     throw new Error("Saldo insuficiente!");
+        // } --> Não precisa mais validar por aqui, pois o decorator já faz isso.
         this.saldo -= valor;
         // localStorage.setItem("saldo", this.saldo.toString());
         Armazenador.salvar("saldo", this.saldo.toString());
     }
     depositar(valor) {
-        if (valor <= 0) {
-            throw new Error("O valor a ser depositado deve ser maior que zero!");
-        }
+        // if (valor <= 0) {
+        //     throw new Error("O valor a ser depositado deve ser maior que zero!");
+        // } --> Não precisa mais validar por aqui, pois o decorator já faz isso.
         this.saldo += valor;
         // localStorage.setItem("saldo", this.saldo.toString());
         Armazenador.salvar("saldo", this.saldo.toString());
     }
 }
+__decorate([
+    ValidaDebito //decorator
+], Conta.prototype, "debitar", null);
+__decorate([
+    ValidaDeposito //decorator
+], Conta.prototype, "depositar", null);
 export class ContaPremium extends Conta {
     registrarTransacao(transacao) {
         if (transacao.tipoTransacao === TipoTransacao.DEPOSITO) {
